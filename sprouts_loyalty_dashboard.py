@@ -1,120 +1,87 @@
 
-from dash import Dash, dcc, html
+from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# Generate dummy data
+# Create dummy data
 np.random.seed(42)
 dates = pd.date_range(end=datetime.today(), periods=90)
-
-data = {
+df = pd.DataFrame({
     "date": dates,
     "daily_active_users": np.random.randint(800, 1200, size=90),
-    "weekly_active_users": np.random.randint(3000, 5000, size=90),
-    "monthly_active_users": np.random.randint(8000, 12000, size=90),
-    "avg_basket_size": np.random.uniform(20, 40, size=90),
-    "repeat_visits": np.random.randint(100, 300, size=90),
-    "conversion_rate": np.random.uniform(0.05, 0.15, size=90),
-    "region": np.random.choice(["West", "Midwest", "Southwest", "Southeast"], size=90),
-    "loyalty_tier": np.random.choice(["Bronze", "Silver", "Gold", "Platinum"], size=90)
-}
+})
+df["week"] = df["date"].dt.to_period("W").apply(lambda r: r.start_time)
+df["month"] = df["date"].dt.to_period("M").apply(lambda r: r.start_time)
 
-df = pd.DataFrame(data)
+df_weekly = df.groupby("week").agg({"daily_active_users": "sum"}).reset_index().rename(columns={"week": "date"})
+df_monthly = df.groupby("month").agg({"daily_active_users": "sum"}).reset_index().rename(columns={"month": "date"})
 
-# Dummy bug and incident data
-open_bugs = 12
-open_incidents = 3
-
-# Summary stats
-total_signups = 95000
-total_active_today = int(df["daily_active_users"].iloc[-1])
-total_repeat_visits = int(df["repeat_visits"].sum())
-
-# Create charts
-fig_dau = px.line(df, x="date", y="daily_active_users", title="📈 Daily Active Users")
-fig_tiers = px.pie(df, names="loyalty_tier", title="🥧 Loyalty Tier Distribution")
-fig_region = px.bar(df.groupby("region").size().reset_index(name="count"),
-                    x="region", y="count", title="🏪 Users by Region")
-fig_repeat = px.histogram(df, x="repeat_visits", nbins=20, title="🔁 Repeat Visits Distribution")
-fig_api = px.line(df, x="date", y="conversion_rate", title="🛰️ API Health (Placeholder for Latency/Errors)")
-fig_email = px.bar(df.iloc[:10], x="date", y="conversion_rate", title="📧 Email Conversion Rate (Dummy Data)")
-
-# Create the Dash app
+# Initialize app
 app = Dash(__name__)
 server = app.server
 
-# Styles
-colors = {
-    "background": "#FFFFFF",
-    "primary": "#007A33",
-    "text": "#333333"
-}
+# App layout
+app.layout = html.Div(style={
+    "backgroundColor": "#FFFFFF",
+    "padding": "30px",
+    "fontFamily": "Open Sans, sans-serif"
+}, children=[
+    html.H1("Sprouts Loyalty Dashboard", style={
+        "textAlign": "left", "color": "#1A1A1A", "fontFamily": "Montserrat, sans-serif"
+    }),
 
-app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundColor": colors["background"], "padding": "20px"}, children=[
-    html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "textAlign": "center", "fontFamily": "Montserrat, sans-serif"}),
-    html.H4("Prototype Demo • All Sections Scrollable", style={"color": colors["text"], "textAlign": "center", "fontFamily": "Open Sans, sans-serif"}),
-
-    html.Div(style={"display": "flex", "justifyContent": "space-around", "marginTop": "20px", "flexWrap": "wrap"}, children=[
-        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
-            html.H3("🧍 Total Signups", style={"color": colors["primary"]}),
-            html.H2(f"{total_signups:,}", style={"color": colors["text"]})
+    html.Div(style={
+        "backgroundColor": "#FAFAFA",
+        "padding": "25px",
+        "borderRadius": "16px",
+        "boxShadow": "0 2px 8px rgba(0,0,0,0.05)",
+        "marginTop": "30px"
+    }, children=[
+        html.Div(style={"display": "flex", "justifyContent": "space-between", "alignItems": "center"}, children=[
+            html.H2("📈 Daily Active Users", style={"marginBottom": "0", "color": "#007A33"}),
+            dcc.Dropdown(
+                id="dau-view-toggle",
+                options=[
+                    {"label": "Daily", "value": "daily"},
+                    {"label": "Weekly", "value": "weekly"},
+                    {"label": "Monthly", "value": "monthly"}
+                ],
+                value="daily",
+                clearable=False,
+                style={
+                    "width": "180px",
+                    "fontSize": "14px",
+                    "border": "1px solid #ccc",
+                    "borderRadius": "6px"
+                }
+            )
         ]),
-        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
-            html.H3("👥 Active Users Today", style={"color": colors["primary"]}),
-            html.H2(f"{total_active_today:,}", style={"color": colors["text"]})
-        ]),
-        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
-            html.H3("🔁 Total Repeat Visits", style={"color": colors["primary"]}),
-            html.H2(f"{total_repeat_visits:,}", style={"color": colors["text"]})
-        ]),
-        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
-            html.H3("🐞 Open Bugs", style={"color": "#C00000"}),
-            html.H2(f"{open_bugs}", style={"color": colors["text"]})
-        ]),
-        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
-            html.H3("🚨 Incidents", style={"color": "#FF6600"}),
-            html.H2(f"{open_incidents}", style={"color": colors["text"]})
-        ])
-    ]),
-
-    html.Div([
-        html.H2("Daily Active Users", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_dau),
-        html.P("This line chart shows the number of unique daily active loyalty users over the past 90 days. A user is considered active if they made a purchase, redeemed an offer, or logged into their account.", style={"color": colors["text"]})
-    ]),
-
-    html.Div([
-        html.H2("Loyalty Tiers", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_tiers),
-        html.P("This pie chart displays the distribution of users across different loyalty tiers. Tiers are based on purchase frequency, total spend, and engagement with loyalty offers.", style={"color": colors["text"]})
-    ]),
-
-    html.Div([
-        html.H2("User Distribution by Region", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_region),
-        html.P("This bar chart groups users by their primary shopping region, helping identify where loyalty engagement is strongest geographically.", style={"color": colors["text"]})
-    ]),
-
-    html.Div([
-        html.H2("Repeat Visits", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_repeat),
-        html.P("This histogram shows the frequency distribution of repeat visits across users. It's a snapshot of user stickiness over time.", style={"color": colors["text"]})
-    ]),
-
-    html.Div([
-        html.H2("Email Performance (Placeholder)", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_email),
-        html.P("This bar chart visualizes dummy data showing conversion rate by date for email campaigns. In the real version, this will reflect actual opens → clicks → purchases.", style={"color": colors["text"]})
-    ]),
-
-    html.Div([
-        html.H2("API Health Monitoring (Placeholder)", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_api),
-        html.P("This placeholder chart will eventually show API response times or error rates over time, indicating technical reliability.", style={"color": colors["text"]})
+        html.Div(id="dau-graph-container", style={"marginTop": "20px"}),
+        html.P("This chart shows the number of active users over time. Use the toggle to view by day, week, or month.",
+               style={"fontSize": "14px", "color": "#555", "marginTop": "10px"})
     ])
 ])
+
+@app.callback(
+    Output("dau-graph-container", "children"),
+    Input("dau-view-toggle", "value")
+)
+def update_dau_graph(view):
+    if view == "weekly":
+        data = df_weekly
+        title = "Weekly Active Users"
+    elif view == "monthly":
+        data = df_monthly
+        title = "Monthly Active Users"
+    else:
+        data = df
+        title = "Daily Active Users"
+
+    fig = px.line(data, x="date", y="daily_active_users", title=title)
+    fig.update_layout(title_x=0.5, margin=dict(l=10, r=10, t=40, b=10))
+    return dcc.Graph(figure=fig)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
