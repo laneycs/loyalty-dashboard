@@ -33,12 +33,14 @@ data_groups = {
 }
 
 tier_counts = df["loyalty_tier"].value_counts().reset_index()
+tier_counts.columns = ["tier", "count"]
 region_counts = df["region"].value_counts().reset_index()
+region_counts.columns = ["region", "count"]
 
 app = Dash(__name__)
 server = app.server
 
-def card(title, dropdown_id, graph_id, toggle_id):
+def card(title, description, graph_id, toggle_id):
     return html.Div(style={
         "backgroundColor": "#FAFAFA",
         "padding": "25px",
@@ -66,7 +68,7 @@ def card(title, dropdown_id, graph_id, toggle_id):
             )
         ]),
         html.Div(id=graph_id, style={"marginTop": "20px"}),
-        html.P(dropdown_id, style={"fontSize": "14px", "color": "#555", "marginTop": "10px"})
+        html.P(description, style={"fontSize": "14px", "color": "#555", "marginTop": "10px"})
     ])
 
 app.layout = html.Div(style={
@@ -98,7 +100,7 @@ app.layout = html.Div(style={
         "marginBottom": "30px"
     }, children=[
         html.H2("🥧 Loyalty Tier Distribution", style={"color": "#007A33"}),
-        dcc.Graph(figure=px.pie(tier_counts, names="index", values="loyalty_tier", title="Loyalty Tier Distribution")),
+        dcc.Graph(figure=px.pie(tier_counts, names="tier", values="count", title="Loyalty Tier Distribution")),
         html.P("This pie chart displays how users are distributed across loyalty tiers.", style={"fontSize": "14px", "color": "#555"})
     ]),
 
@@ -110,7 +112,7 @@ app.layout = html.Div(style={
         "marginBottom": "30px"
     }, children=[
         html.H2("🏪 Regional Distribution", style={"color": "#007A33"}),
-        dcc.Graph(figure=px.bar(region_counts, x="index", y="region", title="User Count by Region")),
+        dcc.Graph(figure=px.bar(region_counts, x="region", y="count", title="User Count by Region")),
         html.P("Shows the number of users per region where Sprouts loyalty features are used.", style={"fontSize": "14px", "color": "#555"})
     ])
 ])
