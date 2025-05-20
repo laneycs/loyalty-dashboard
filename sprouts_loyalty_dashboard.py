@@ -1,10 +1,10 @@
 
-from dash import Dash, html, dcc
-import dash_draggable
+from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import dash_bootstrap_components as dbc
 
 np.random.seed(42)
 dates = pd.date_range(end=datetime.today(), periods=90)
@@ -17,44 +17,41 @@ df = pd.DataFrame({
     "uptime": np.random.uniform(95, 100, size=90)
 })
 
-app = Dash(__name__)
+def create_card(title, fig_id):
+    return dbc.Col(dbc.Card([
+        dbc.CardHeader(html.H4(title, style={"marginBottom": "0", "color": "#007A33"})),
+        dbc.CardBody(html.Div(id=fig_id))
+    ], className="mb-4 shadow-sm"), width=6)
+
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-# Generate example figures
-figs = {
-    "Daily Active Users": px.line(df, x="date", y="daily_active_users", title="Active Users"),
-    "New Signups": px.bar(df, x="date", y="new_signups", title="New Signups"),
-    "Basket Size": px.area(df, x="date", y="basket_size", title="Basket Size"),
-    "Email Clicks": px.bar(df, x="date", y="email_clicks", title="Email Clicks"),
-    "Uptime": px.line(df, x="date", y="uptime", title="System Uptime %")
-}
+app.layout = dbc.Container([
+    html.H1("Sprouts Loyalty Dashboard", className="my-4", style={"fontFamily": "Montserrat, sans-serif", "color": "#1A1A1A"}),
 
-cards = [
-    dash_draggable.GridItem([
-        html.Div(style={
-            "backgroundColor": "#FAFAFA",
-            "padding": "20px",
-            "borderRadius": "12px",
-            "boxShadow": "0 2px 6px rgba(0,0,0,0.1)"
-        }, children=[
-            html.H3(title, style={"marginBottom": "10px", "color": "#007A33", "fontFamily": "Montserrat, sans-serif"}),
-            dcc.Graph(figure=fig)
-        ])
-    ], key=title, dataGrid={"x": i % 2, "y": i // 2, "w": 1, "h": 1, "minW": 1, "minH": 1})
-    for i, (title, fig) in enumerate(figs.items())
-]
+    dbc.Row([
+        create_card("Daily Active Users", "graph-dau"),
+        create_card("New Signups", "graph-signups"),
+        create_card("Basket Size", "graph-basket"),
+        create_card("Email Clicks", "graph-email"),
+        create_card("System Uptime", "graph-uptime")
+    ])
+], fluid=True)
 
-app.layout = html.Div([
-    html.H1("Sprouts Loyalty Dashboard", style={"color": "#1A1A1A", "fontFamily": "Montserrat, sans-serif", "paddingBottom": "20px"}),
-    dash_draggable.GridLayout(
-        children=cards,
-        className="layout",
-        cols=2,
-        rowHeight=300,
-        width=1200,
-        style={"margin": "0 auto"}
-    )
-])
+@app.callback(Output("graph-dau", "children"), Input("graph-dau", "id"))
+def show_dau(_): return dcc.Graph(figure=px.line(df, x="date", y="daily_active_users", title="DAU"))
+
+@app.callback(Output("graph-signups", "children"), Input("graph-signups", "id"))
+def show_signups(_): return dcc.Graph(figure=px.bar(df, x="date", y="new_signups", title="Signups"))
+
+@app.callback(Output("graph-basket", "children"), Input("graph-basket", "id"))
+def show_basket(_): return dcc.Graph(figure=px.area(df, x="date", y="basket_size", title="Basket Size"))
+
+@app.callback(Output("graph-email", "children"), Input("graph-email", "id"))
+def show_email(_): return dcc.Graph(figure=px.bar(df, x="date", y="email_clicks", title="Email Clicks"))
+
+@app.callback(Output("graph-uptime", "children"), Input("graph-uptime", "id"))
+def show_uptime(_): return dcc.Graph(figure=px.line(df, x="date", y="uptime", title="System Uptime %"))
 
 if __name__ == "__main__":
     app.run_server(debug=True)
