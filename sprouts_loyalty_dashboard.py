@@ -23,7 +23,16 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Create placeholder charts
+# Dummy bug and incident data
+open_bugs = 12
+open_incidents = 3
+
+# Summary stats
+total_signups = 95000
+total_active_today = int(df["daily_active_users"].iloc[-1])
+total_repeat_visits = int(df["repeat_visits"].sum())
+
+# Create charts
 fig_dau = px.line(df, x="date", y="daily_active_users", title="📈 Daily Active Users")
 fig_tiers = px.pie(df, names="loyalty_tier", title="🥧 Loyalty Tier Distribution")
 fig_region = px.bar(df.groupby("region").size().reset_index(name="count"),
@@ -47,8 +56,31 @@ app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundC
     html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "textAlign": "center", "fontFamily": "Montserrat, sans-serif"}),
     html.H4("Prototype Demo • All Sections Scrollable", style={"color": colors["text"], "textAlign": "center", "fontFamily": "Open Sans, sans-serif"}),
 
+    html.Div(style={"display": "flex", "justifyContent": "space-around", "marginTop": "20px", "flexWrap": "wrap"}, children=[
+        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
+            html.H3("🧍 Total Signups", style={"color": colors["primary"]}),
+            html.H2(f"{total_signups:,}", style={"color": colors["text"]})
+        ]),
+        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
+            html.H3("👥 Active Users Today", style={"color": colors["primary"]}),
+            html.H2(f"{total_active_today:,}", style={"color": colors["text"]})
+        ]),
+        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
+            html.H3("🔁 Total Repeat Visits", style={"color": colors["primary"]}),
+            html.H2(f"{total_repeat_visits:,}", style={"color": colors["text"]})
+        ]),
+        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
+            html.H3("🐞 Open Bugs", style={"color": "#C00000"}),
+            html.H2(f"{open_bugs}", style={"color": colors["text"]})
+        ]),
+        html.Div(style={"margin": "10px", "textAlign": "center"}, children=[
+            html.H3("🚨 Incidents", style={"color": "#FF6600"}),
+            html.H2(f"{open_incidents}", style={"color": colors["text"]})
+        ])
+    ]),
+
     html.Div([
-        html.H2("Overview", style={"color": colors["primary"]}),
+        html.H2("Daily Active Users", style={"color": colors["primary"]}),
         dcc.Graph(figure=fig_dau),
         html.P("This line chart shows the number of unique daily active loyalty users over the past 90 days. A user is considered active if they made a purchase, redeemed an offer, or logged into their account.", style={"color": colors["text"]})
     ]),
