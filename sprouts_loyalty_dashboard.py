@@ -23,58 +23,68 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Create a basic chart
+# Create a chart
 fig_dau = px.line(df, x="date", y="daily_active_users", title="Daily Active Users")
 
 # Create the Dash app
 app = Dash(__name__)
 server = app.server
 
-# Layout
-app.layout = html.Div([
-    html.H1("Sprouts Loyalty Dashboard", style={'textAlign': 'center'}),
+# Styles
+colors = {
+    "background": "#F6F6F6",
+    "primary": "#007A33",
+    "accent": "#8DC63F",
+    "text": "#333333"
+}
+
+app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundColor": colors["background"]}, children=[
+    html.Div(style={"padding": "20px", "textAlign": "center"}, children=[
+        html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "marginBottom": "5px"}),
+        html.H4("Tracking Loyalty Behavior & Engagement", style={"color": colors["text"]})
+    ]),
 
     dcc.Tabs([
         dcc.Tab(label='Overview', children=[
-            html.Div([
-                html.H2("Key Metrics Summary"),
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("Key Metrics Summary", style={"color": colors["primary"]}),
                 dcc.Graph(figure=fig_dau)
             ])
         ]),
         dcc.Tab(label='Acquisition & Enrollment', children=[
-            html.Div([
-                html.H2("Sign-ups and Acquisition Channels"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("Sign-ups and Acquisition Channels", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ]),
         dcc.Tab(label='Engagement & Behavior', children=[
-            html.Div([
-                html.H2("User Activity & Shopping Patterns"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("User Activity & Shopping Patterns", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ]),
         dcc.Tab(label='Loyalty Tiers & Progression', children=[
-            html.Div([
-                html.H2("Tier Breakdown & Progression"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("Tier Breakdown & Progression", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ]),
         dcc.Tab(label='Marketing Email Performance', children=[
-            html.Div([
-                html.H2("Email Conversions & Open Rates"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("Email Conversions & Open Rates", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ]),
         dcc.Tab(label='Retention & Churn', children=[
-            html.Div([
-                html.H2("User Retention Analysis"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("User Retention Analysis", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ]),
         dcc.Tab(label='Technical Performance & Bugs', children=[
-            html.Div([
-                html.H2("API and Issue Tracking"),
-                html.P("More charts coming soon...")
+            html.Div(style={"padding": "20px"}, children=[
+                html.H2("API and Issue Tracking", style={"color": colors["primary"]}),
+                html.P("More charts coming soon...", style={"color": colors["text"]})
             ])
         ])
     ])
