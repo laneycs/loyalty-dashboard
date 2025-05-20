@@ -38,43 +38,49 @@ server = app.server
 
 # Styles
 colors = {
-    "background": "#F6F6F6",
+    "background": "#FFFFFF",
     "primary": "#007A33",
     "text": "#333333"
 }
 
 app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundColor": colors["background"], "padding": "20px"}, children=[
-    html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "textAlign": "center"}),
-    html.H4("Prototype Demo • All Sections Scrollable", style={"color": colors["text"], "textAlign": "center"}),
+    html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "textAlign": "center", "fontFamily": "Montserrat, sans-serif"}),
+    html.H4("Prototype Demo • All Sections Scrollable", style={"color": colors["text"], "textAlign": "center", "fontFamily": "Open Sans, sans-serif"}),
 
     html.Div([
         html.H2("Overview", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_dau)
+        dcc.Graph(figure=fig_dau),
+        html.P("This line chart shows the number of unique daily active loyalty users over the past 90 days. A user is considered active if they made a purchase, redeemed an offer, or logged into their account.", style={"color": colors["text"]})
     ]),
 
     html.Div([
         html.H2("Loyalty Tiers", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_tiers)
+        dcc.Graph(figure=fig_tiers),
+        html.P("This pie chart displays the distribution of users across different loyalty tiers. Tiers are based on purchase frequency, total spend, and engagement with loyalty offers.", style={"color": colors["text"]})
     ]),
 
     html.Div([
         html.H2("User Distribution by Region", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_region)
+        dcc.Graph(figure=fig_region),
+        html.P("This bar chart groups users by their primary shopping region, helping identify where loyalty engagement is strongest geographically.", style={"color": colors["text"]})
     ]),
 
     html.Div([
         html.H2("Repeat Visits", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_repeat)
+        dcc.Graph(figure=fig_repeat),
+        html.P("This histogram shows the frequency distribution of repeat visits across users. It's a snapshot of user stickiness over time.", style={"color": colors["text"]})
     ]),
 
     html.Div([
         html.H2("Email Performance (Placeholder)", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_email)
+        dcc.Graph(figure=fig_email),
+        html.P("This bar chart visualizes dummy data showing conversion rate by date for email campaigns. In the real version, this will reflect actual opens → clicks → purchases.", style={"color": colors["text"]})
     ]),
 
     html.Div([
         html.H2("API Health Monitoring (Placeholder)", style={"color": colors["primary"]}),
-        dcc.Graph(figure=fig_api)
+        dcc.Graph(figure=fig_api),
+        html.P("This placeholder chart will eventually show API response times or error rates over time, indicating technical reliability.", style={"color": colors["text"]})
     ])
 ])
 
