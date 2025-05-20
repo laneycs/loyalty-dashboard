@@ -23,8 +23,14 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Create a chart
-fig_dau = px.line(df, x="date", y="daily_active_users", title="Daily Active Users")
+# Create placeholder charts
+fig_dau = px.line(df, x="date", y="daily_active_users", title="📈 Daily Active Users")
+fig_tiers = px.pie(df, names="loyalty_tier", title="🥧 Loyalty Tier Distribution")
+fig_region = px.bar(df.groupby("region").size().reset_index(name="count"),
+                    x="region", y="count", title="🏪 Users by Region")
+fig_repeat = px.histogram(df, x="repeat_visits", nbins=20, title="🔁 Repeat Visits Distribution")
+fig_api = px.line(df, x="date", y="conversion_rate", title="🛰️ API Health (Placeholder for Latency/Errors)")
+fig_email = px.bar(df.iloc[:10], x="date", y="conversion_rate", title="📧 Email Conversion Rate (Dummy Data)")
 
 # Create the Dash app
 app = Dash(__name__)
@@ -34,59 +40,41 @@ server = app.server
 colors = {
     "background": "#F6F6F6",
     "primary": "#007A33",
-    "accent": "#8DC63F",
     "text": "#333333"
 }
 
-app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundColor": colors["background"]}, children=[
-    html.Div(style={"padding": "20px", "textAlign": "center"}, children=[
-        html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "marginBottom": "5px"}),
-        html.H4("Tracking Loyalty Behavior & Engagement", style={"color": colors["text"]})
+app.layout = html.Div(style={"fontFamily": "Open Sans, sans-serif", "backgroundColor": colors["background"], "padding": "20px"}, children=[
+    html.H1("Sprouts Loyalty Dashboard", style={"color": colors["primary"], "textAlign": "center"}),
+    html.H4("Prototype Demo • All Sections Scrollable", style={"color": colors["text"], "textAlign": "center"}),
+
+    html.Div([
+        html.H2("Overview", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_dau)
     ]),
 
-    dcc.Tabs([
-        dcc.Tab(label='Overview', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("Key Metrics Summary", style={"color": colors["primary"]}),
-                dcc.Graph(figure=fig_dau)
-            ])
-        ]),
-        dcc.Tab(label='Acquisition & Enrollment', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("Sign-ups and Acquisition Channels", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ]),
-        dcc.Tab(label='Engagement & Behavior', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("User Activity & Shopping Patterns", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ]),
-        dcc.Tab(label='Loyalty Tiers & Progression', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("Tier Breakdown & Progression", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ]),
-        dcc.Tab(label='Marketing Email Performance', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("Email Conversions & Open Rates", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ]),
-        dcc.Tab(label='Retention & Churn', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("User Retention Analysis", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ]),
-        dcc.Tab(label='Technical Performance & Bugs', children=[
-            html.Div(style={"padding": "20px"}, children=[
-                html.H2("API and Issue Tracking", style={"color": colors["primary"]}),
-                html.P("More charts coming soon...", style={"color": colors["text"]})
-            ])
-        ])
+    html.Div([
+        html.H2("Loyalty Tiers", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_tiers)
+    ]),
+
+    html.Div([
+        html.H2("User Distribution by Region", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_region)
+    ]),
+
+    html.Div([
+        html.H2("Repeat Visits", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_repeat)
+    ]),
+
+    html.Div([
+        html.H2("Email Performance (Placeholder)", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_email)
+    ]),
+
+    html.Div([
+        html.H2("API Health Monitoring (Placeholder)", style={"color": colors["primary"]}),
+        dcc.Graph(figure=fig_api)
     ])
 ])
 
