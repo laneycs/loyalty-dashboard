@@ -1,2 +1,10 @@
-/* External stylesheet for Sprouts Loyalty Dashboard */
-body { font-family: 'Helvetica Neue', sans-serif; }
+
+body {
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    color: #67a030;
+}
