@@ -1,4 +1,5 @@
 
+import dash
 from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -77,17 +78,13 @@ def create_card(title, figure, description):
 app.layout = dbc.Container([
     html.H1("Sprouts Loyalty Dashboard", className="my-4", style={"fontWeight": "700"}),
 
-    html.Div([
-        html.Label("Toggle View:", className="fw-bold me-2"),
-        dbc.ButtonGroup([
-            dbc.Button("Daily", id="btn-daily", n_clicks=1, color="success", outline=False),
-            dbc.Button("Weekly", id="btn-weekly", n_clicks=0, color="success", outline=True),
-            dbc.Button("Monthly", id="btn-monthly", n_clicks=0, color="success", outline=True),
-        ], className="mb-4")
-    ]),
+    dbc.ButtonGroup([
+        dbc.Button("Daily", id="btn-daily", n_clicks=1, color="success", outline=False),
+        dbc.Button("Weekly", id="btn-weekly", n_clicks=0, color="success", outline=True),
+        dbc.Button("Monthly", id="btn-monthly", n_clicks=0, color="success", outline=True),
+    ], className="mb-4"),
 
     dcc.Store(id="view-store", data="day"),
-
     html.Div(id="dashboard-content")
 ], fluid=True)
 
