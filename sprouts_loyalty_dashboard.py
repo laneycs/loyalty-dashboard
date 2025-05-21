@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# Load data
 df_pos = pd.read_csv("loyalty_2_0_pos_data_combined.csv", parse_dates=["Date"])
 
 np.random.seed(42)
