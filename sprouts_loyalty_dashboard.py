@@ -1,5 +1,5 @@
 
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
@@ -79,25 +79,37 @@ app.layout = dbc.Container([
 
     html.Div([
         html.Label("Toggle View:", className="fw-bold me-2"),
-        dcc.RadioItems(
-            id="global-toggle",
-            options=[
-                {"label": "Daily", "value": "day"},
-                {"label": "Weekly", "value": "week"},
-                {"label": "Monthly", "value": "month"}
-            ],
-            value="day",
-            inline=True,
-            labelStyle={"marginRight": "15px"}
-        )
-    ], className="mb-4"),
+        dbc.ButtonGroup([
+            dbc.Button("Daily", id="btn-daily", n_clicks=1, color="success", outline=False),
+            dbc.Button("Weekly", id="btn-weekly", n_clicks=0, color="success", outline=True),
+            dbc.Button("Monthly", id="btn-monthly", n_clicks=0, color="success", outline=True),
+        ], className="mb-4")
+    ]),
+
+    dcc.Store(id="view-store", data="day"),
 
     html.Div(id="dashboard-content")
 ], fluid=True)
 
 @app.callback(
+    Output("view-store", "data"),
+    Input("btn-daily", "n_clicks"),
+    Input("btn-weekly", "n_clicks"),
+    Input("btn-monthly", "n_clicks"),
+)
+def set_view(d, w, m):
+    ctx = dash.callback_context.triggered_id
+    if ctx == "btn-daily":
+        return "day"
+    elif ctx == "btn-weekly":
+        return "week"
+    elif ctx == "btn-monthly":
+        return "month"
+    return "day"
+
+@app.callback(
     Output("dashboard-content", "children"),
-    Input("global-toggle", "value")
+    Input("view-store", "data")
 )
 def update_dashboard(view_type):
     grouped = {
