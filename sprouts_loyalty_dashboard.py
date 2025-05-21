@@ -1,1 +1,0 @@
-# Full secure dashboard will be here — rebuilding in next step
