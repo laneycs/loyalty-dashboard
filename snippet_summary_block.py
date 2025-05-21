@@ -1,1 +1,0 @@
-# Placeholder for snippet_summary_block.py
