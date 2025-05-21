@@ -6,10 +6,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# Load POS data
 df_pos = pd.read_csv("loyalty_2_0_pos_data_combined.csv", parse_dates=["Date"])
 
-# Create dummy main data and groupable versions
 np.random.seed(42)
 dates = pd.date_range(end=datetime.today(), periods=90)
 df = pd.DataFrame({
@@ -27,8 +25,8 @@ df["month"] = df["date"].dt.to_period("M").apply(lambda r: r.start_time)
 def group_data(metric):
     return {
         "day": df[["date", metric]],
-        "week": df.groupby("week")[metric].mean().reset_index(names=["date"]),
-        "month": df.groupby("month")[metric].mean().reset_index(names=["date"])
+        "week": df.groupby("week")[metric].mean().reset_index().rename(columns={"week": "date"}),
+        "month": df.groupby("month")[metric].mean().reset_index().rename(columns={"month": "date"})
     }
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
