@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
+# Load data
 df_pos = pd.read_csv("loyalty_2_0_pos_data_combined.csv", parse_dates=["Date"])
 
 np.random.seed(42)
@@ -32,23 +33,15 @@ def group_data(metric):
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-def create_card(title, metric, view_type, chart_type="line", description=""):
-    grouped = group_data(metric)[view_type]
-    if chart_type == "bar":
-        fig = px.bar(grouped, x="date", y=metric)
-    elif chart_type == "area":
-        fig = px.area(grouped, x="date", y=metric)
-    else:
-        fig = px.line(grouped, x="date", y=metric)
-    fig.update_layout(margin=dict(l=10, r=10, t=30, b=10), height=280)
+def create_card(title, figure, description):
     return dbc.Col(
         dbc.Card([
             dbc.CardHeader(html.H5(title, className="text-primary fw-semibold", style={"fontFamily": "Montserrat"})),
             dbc.CardBody([
-                dcc.Graph(figure=fig, config={"displayModeBar": False}),
-                html.Small(description, style={"color": "#555", "display": "block", "marginTop": "10px", "fontFamily": "Open Sans"})
+                dcc.Graph(figure=figure, config={"displayModeBar": False}),
+                html.Small(description, style={"color": "#555", "fontFamily": "Open Sans"})
             ])
-        ], className="shadow-sm", style={"borderRadius": "16px"}),
+        ], className="shadow-sm", style={"borderRadius": "16px", "marginBottom": "20px"}),
         width=6
     )
 
@@ -78,37 +71,43 @@ app.layout = dbc.Container([
     Input("global-toggle", "value")
 )
 def update_dashboard(view_type):
+    grouped = {
+        "daily_active_users": group_data("daily_active_users")[view_type],
+        "new_signups": group_data("new_signups")[view_type],
+        "basket_size": group_data("basket_size")[view_type],
+        "email_clicks": group_data("email_clicks")[view_type],
+        "uptime": group_data("uptime")[view_type],
+        "region": df.groupby("region").size().reset_index(name="users")
+    }
+
     return [
-        html.Div([
-            html.H2("Loyalty Engagement", className="mb-3", style={"fontFamily": "Montserrat"}),
-            html.P("A pulse on how well the loyalty program is engaging users day-to-day.", style={"fontFamily": "Open Sans"}),
-            dbc.Row([
-                create_card("Daily Active Users", "daily_active_users", view_type, "line",
-                            "How many users engage with us each day."),
-                create_card("New Signups", "new_signups", view_type, "bar",
-                            "New loyalty members acquired.")
-            ]),
-        ], className="mb-5"),
+        html.H2("Loyalty Engagement", style={"fontFamily": "Montserrat"}),
+        dbc.Row([
+            create_card("Daily Active Users", px.line(grouped["daily_active_users"], x="date", y="daily_active_users"), "How many users engage with us each day."),
+            create_card("New Signups", px.bar(grouped["new_signups"], x="date", y="new_signups"), "New loyalty members acquired.")
+        ]),
 
-        html.Div([
-            html.H2("Program Interaction", className="mb-3", style={"fontFamily": "Montserrat"}),
-            html.P("Exploring user behavior post-signup and marketing effectiveness.", style={"fontFamily": "Open Sans"}),
-            dbc.Row([
-                create_card("Basket Size Over Time", "basket_size", view_type, "area",
-                            "Average basket size per transaction."),
-                create_card("Email Clicks", "email_clicks", view_type, "bar",
-                            "Marketing engagement through email clicks.")
-            ])
-        ], className="mb-5"),
+        html.H2("Program Interaction", style={"fontFamily": "Montserrat"}),
+        dbc.Row([
+            create_card("Basket Size Over Time", px.area(grouped["basket_size"], x="date", y="basket_size"), "Average basket size per transaction."),
+            create_card("Email Clicks", px.bar(grouped["email_clicks"], x="date", y="email_clicks"), "Marketing engagement through email clicks.")
+        ]),
 
-        html.Div([
-            html.H2("Platform Operations", className="mb-3", style={"fontFamily": "Montserrat"}),
-            html.P("Reliability and health of the backend loyalty infrastructure.", style={"fontFamily": "Open Sans"}),
-            dbc.Row([
-                create_card("System Uptime %", "uptime", view_type, "line",
-                            "System availability for loyalty operations."),
-            ])
-        ], className="mb-5"),
+        html.H2("POS Program Performance", style={"fontFamily": "Montserrat"}),
+        dbc.Row([
+            create_card("Scan Rate (%)", px.line(df_pos, x="Date", y="Scan Rate (%)"), "Percent of eligible orders where loyalty account was scanned."),
+            create_card("Orders with Redemptions", px.line(df_pos, x="Date", y="Orders with Redemptions"), "Rewards used by loyalty members.")
+        ]),
+        dbc.Row([
+            create_card("In Lane Clip Count", px.bar(df_pos, x="Date", y="In Lane Clip Count"), "Offers clipped in-store at checkout."),
+            create_card("Loyalty Member Orders", px.line(df_pos, x="Date", y="Loyalty Member Orders"), "Orders placed by registered members.")
+        ]),
+
+        html.H2("Operational Health & Regions", style={"fontFamily": "Montserrat"}),
+        dbc.Row([
+            create_card("System Uptime %", px.line(grouped["uptime"], x="date", y="uptime"), "System reliability for loyalty operations."),
+            create_card("User Activity by Region", px.choropleth(grouped["region"], locations="region", locationmode="USA-states", color="users", scope="usa"), "Geographic distribution of users.")
+        ])
     ]
 
 if __name__ == "__main__":
