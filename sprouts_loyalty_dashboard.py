@@ -1,15 +1,16 @@
 
 from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
-import plotly.express as px
 import pandas as pd
 import numpy as np
+import plotly.express as px
 from datetime import datetime, timedelta
 
+# Load POS data
 df_pos = pd.read_csv("loyalty_2_0_pos_data_combined.csv", parse_dates=["Date"])
-
 np.random.seed(42)
 dates = pd.date_range(end=datetime.today(), periods=90)
+
 df = pd.DataFrame({
     "date": dates,
     "daily_active_users": np.random.randint(800, 1200, size=90),
@@ -35,20 +36,20 @@ server = app.server
 def create_card(title, figure, description):
     return dbc.Col(
         dbc.Card([
-            dbc.CardHeader(html.H5(title, className="text-primary fw-semibold", style={"fontFamily": "Montserrat"})),
+            dbc.CardHeader(html.H5(title, className="text-success", style={"fontFamily": "Open Sans", "fontSize": "20px"})),
             dbc.CardBody([
                 dcc.Graph(figure=figure, config={"displayModeBar": False}),
-                html.Small(description, style={"color": "#555", "fontFamily": "Open Sans"})
+                html.Small(description, style={"fontFamily": "Open Sans", "color": "#555"})
             ])
-        ], className="shadow-sm", style={"borderRadius": "16px", "marginBottom": "20px"}),
+        ], className="shadow-sm", style={"borderRadius": "12px", "marginBottom": "20px"}),
         width=6
     )
 
 app.layout = dbc.Container([
-    html.H1("Sprouts Loyalty Dashboard", className="my-4", style={"fontFamily": "Montserrat", "color": "#1A1A1A"}),
+    html.H1("Sprouts Loyalty Dashboard", className="my-4", style={"fontFamily": "Open Sans", "fontWeight": "700"}),
 
     html.Div([
-        html.Label("View By:", className="fw-bold me-2", style={"fontFamily": "Open Sans"}),
+        html.Label("Toggle View:", className="fw-bold me-2", style={"fontFamily": "Open Sans"}),
         dcc.RadioItems(
             id="global-toggle",
             options=[
@@ -80,32 +81,37 @@ def update_dashboard(view_type):
     }
 
     return [
-        html.H2("Loyalty Engagement", style={"fontFamily": "Montserrat"}),
+        html.H2("Loyalty Engagement", style={"fontFamily": "Open Sans", "fontWeight": "600"}),
+        html.P("This section gives a pulse on daily platform activity and acquisition of new loyalty members.", style={"fontFamily": "Open Sans"}),
         dbc.Row([
-            create_card("Daily Active Users", px.line(grouped["daily_active_users"], x="date", y="daily_active_users"), "How many users engage with us each day."),
-            create_card("New Signups", px.bar(grouped["new_signups"], x="date", y="new_signups"), "New loyalty members acquired.")
+            create_card("Daily Active Users", px.line(grouped["daily_active_users"], x="date", y="daily_active_users", color_discrete_sequence=["#198754"]).update_traces(line_shape='spline'), "How many users engaged with the platform."),
+            create_card("New Signups", px.bar(grouped["new_signups"], x="date", y="new_signups", color_discrete_sequence=["#20c997"]), "New loyalty member registrations.")
         ]),
 
-        html.H2("Program Interaction", style={"fontFamily": "Montserrat"}),
+        html.H2("User Behavior & Offers", style={"fontFamily": "Open Sans", "fontWeight": "600"}),
+        html.P("What happens after sign-up? This section dives into user spend and interaction with promotional emails.", style={"fontFamily": "Open Sans"}),
         dbc.Row([
-            create_card("Basket Size Over Time", px.area(grouped["basket_size"], x="date", y="basket_size"), "Average basket size per transaction."),
-            create_card("Email Clicks", px.bar(grouped["email_clicks"], x="date", y="email_clicks"), "Marketing engagement through email clicks.")
+            create_card("Basket Size", px.area(grouped["basket_size"], x="date", y="basket_size", color_discrete_sequence=["#0dcaf0"]).update_traces(line_shape='spline'), "Average spend per order."),
+            create_card("Email Clicks", px.bar(grouped["email_clicks"], x="date", y="email_clicks", color_discrete_sequence=["#6f42c1"]), "Clicks from loyalty email campaigns.")
         ]),
 
-        html.H2("POS Program Performance", style={"fontFamily": "Montserrat"}),
+        html.H2("POS Program Insights", style={"fontFamily": "Open Sans", "fontWeight": "600"}),
+        html.P("This section illustrates how loyalty translates into real transactions and redemptions at checkout.", style={"fontFamily": "Open Sans"}),
         dbc.Row([
-            create_card("Scan Rate (%)", px.line(df_pos, x="Date", y="Scan Rate (%)"), "Percent of eligible orders where loyalty account was scanned."),
-            create_card("Orders with Redemptions", px.line(df_pos, x="Date", y="Orders with Redemptions"), "Rewards used by loyalty members.")
-        ]),
-        dbc.Row([
-            create_card("In Lane Clip Count", px.bar(df_pos, x="Date", y="In Lane Clip Count"), "Offers clipped in-store at checkout."),
-            create_card("Loyalty Member Orders", px.line(df_pos, x="Date", y="Loyalty Member Orders"), "Orders placed by registered members.")
+            create_card("Scan Rate", px.line(df_pos, x="Date", y="Scan Rate (%)", color_discrete_sequence=["#ffc107"]).update_traces(line_shape='spline'), "Percent of orders scanned with loyalty."),
+            create_card("Orders with Redemptions", px.line(df_pos, x="Date", y="Orders with Redemptions", color_discrete_sequence=["#fd7e14"]).update_traces(line_shape='spline'), "Total rewards redeemed.")
         ]),
 
-        html.H2("Operational Health & Regions", style={"fontFamily": "Montserrat"}),
         dbc.Row([
-            create_card("System Uptime %", px.line(grouped["uptime"], x="date", y="uptime"), "System reliability for loyalty operations."),
-            create_card("User Activity by Region", px.choropleth(grouped["region"], locations="region", locationmode="USA-states", color="users", scope="usa"), "Geographic distribution of users.")
+            create_card("In-Lane Clip Count", px.bar(df_pos, x="Date", y="In Lane Clip Count", color_discrete_sequence=["#dc3545"]), "Clip actions triggered during checkout."),
+            create_card("Loyalty Member Orders", px.line(df_pos, x="Date", y="Loyalty Member Orders", color_discrete_sequence=["#0d6efd"]).update_traces(line_shape='spline'), "Transactions made by members.")
+        ]),
+
+        html.H2("System Health & Geography", style={"fontFamily": "Open Sans", "fontWeight": "600"}),
+        html.P("Operational reliability and geographic distribution of loyalty activity.", style={"fontFamily": "Open Sans"}),
+        dbc.Row([
+            create_card("System Uptime", px.line(grouped["uptime"], x="date", y="uptime", color_discrete_sequence=["#198754"]).update_traces(line_shape='spline'), "Backend performance availability."),
+            create_card("User Activity by Region", px.choropleth(grouped["region"], locations="region", locationmode="USA-states", color="users", scope="usa"), "Where loyalty traffic is concentrated.")
         ])
     ]
 
