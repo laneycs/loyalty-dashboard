@@ -1,0 +1,1 @@
+web: gunicorn sprouts_loyalty_dashboard:server
