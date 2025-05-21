@@ -1,5 +1,5 @@
 
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 # Load POS data
 df_pos = pd.read_csv("loyalty_2_0_pos_data_combined.csv", parse_dates=["Date"])
 
-# Dummy general data
+# Create dummy main data and groupable versions
 np.random.seed(42)
 dates = pd.date_range(end=datetime.today(), periods=90)
 df = pd.DataFrame({
@@ -21,93 +21,97 @@ df = pd.DataFrame({
     "uptime": np.random.uniform(95, 100, size=90),
     "region": np.random.choice(["CA", "TX", "NY", "FL", "IL", "AZ", "MI"], size=90)
 })
+df["week"] = df["date"].dt.to_period("W").apply(lambda r: r.start_time)
+df["month"] = df["date"].dt.to_period("M").apply(lambda r: r.start_time)
 
-def create_card(title, figure, description):
-    return dbc.Col(
-        dbc.Card([
-            dbc.CardHeader(html.H5(title)),
-            dbc.CardBody([
-                dcc.Graph(figure=figure, config={"displayModeBar": False}),
-                html.Small(description, style={"color": "#555", "display": "block", "marginTop": "10px"})
-            ])
-        ], className="mb-4 shadow-sm"),
-        width=6
-    )
+def group_data(metric):
+    return {
+        "day": df[["date", metric]],
+        "week": df.groupby("week")[metric].mean().reset_index(names=["date"]),
+        "month": df.groupby("month")[metric].mean().reset_index(names=["date"])
+    }
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
+def create_card(title, metric, view_type, chart_type="line", description=""):
+    grouped = group_data(metric)[view_type]
+    if chart_type == "bar":
+        fig = px.bar(grouped, x="date", y=metric)
+    elif chart_type == "area":
+        fig = px.area(grouped, x="date", y=metric)
+    else:
+        fig = px.line(grouped, x="date", y=metric)
+    fig.update_layout(margin=dict(l=10, r=10, t=30, b=10), height=280)
+    return dbc.Col(
+        dbc.Card([
+            dbc.CardHeader(html.H5(title, className="text-primary fw-semibold", style={"fontFamily": "Montserrat"})),
+            dbc.CardBody([
+                dcc.Graph(figure=fig, config={"displayModeBar": False}),
+                html.Small(description, style={"color": "#555", "display": "block", "marginTop": "10px", "fontFamily": "Open Sans"})
+            ])
+        ], className="shadow-sm", style={"borderRadius": "16px"}),
+        width=6
+    )
+
 app.layout = dbc.Container([
-    html.H1("Sprouts Loyalty Dashboard", className="my-4"),
+    html.H1("Sprouts Loyalty Dashboard", className="my-4", style={"fontFamily": "Montserrat", "color": "#1A1A1A"}),
 
-    html.H2("1. Loyalty Health at a Glance"),
-    html.P("This section gives us a pulse on how well the loyalty program is engaging users day-to-day — highlighting overall traffic to the platform and the rate at which shoppers identify themselves at checkout."),
-    dbc.Row([
-        create_card("Daily Active Users",
-                    px.line(df, x="date", y="daily_active_users", title=""),
-                    "Total number of users who engaged with the platform each day."),
-        create_card("Scan Rate (%)",
-                    px.line(df_pos, x="Date", y="Scan Rate (%)", title=""),
-                    "Percent of eligible orders where the loyalty ID was scanned.")
-    ]),
+    html.Div([
+        html.Label("View By:", className="fw-bold me-2", style={"fontFamily": "Open Sans"}),
+        dcc.RadioItems(
+            id="global-toggle",
+            options=[
+                {"label": "Daily", "value": "day"},
+                {"label": "Weekly", "value": "week"},
+                {"label": "Monthly", "value": "month"}
+            ],
+            value="day",
+            inline=True,
+            labelStyle={"marginRight": "15px", "fontFamily": "Open Sans"}
+        )
+    ], className="mb-4"),
 
-    html.H2("2. User Growth & Acquisition"),
-    html.P("Here we showcase how effectively the program is growing — highlighting both acquisition of new loyalty members and the volume of transactions that are eligible for loyalty."),
-    dbc.Row([
-        create_card("New Loyalty Signups",
-                    px.bar(df, x="date", y="new_signups", title=""),
-                    "Daily count of newly registered loyalty members."),
-        create_card("Loyalty Eligible Orders",
-                    px.line(df_pos, x="Date", y="Loyalty Eligible Orders", title=""),
-                    "POS orders that qualified for loyalty benefits.")
-    ]),
-
-    html.H2("3. Loyalty Program Engagement"),
-    html.P("After sign-up, how do members engage with the program? This section looks at email performance and the rate of actual member-based transactions."),
-    dbc.Row([
-        create_card("Email Clicks",
-                    px.bar(df, x="date", y="email_clicks", title=""),
-                    "Volume of loyalty-related email link clicks."),
-        create_card("Loyalty Member Orders",
-                    px.line(df_pos, x="Date", y="Loyalty Member Orders", title=""),
-                    "Orders placed by registered loyalty members.")
-    ]),
-
-    html.H2("4. Reward Activation & Redemptions"),
-    html.P("This section reveals how well members are using loyalty benefits — whether they are redeeming rewards and actively engaging with in-lane offers."),
-    dbc.Row([
-        create_card("Orders with Redemptions",
-                    px.line(df_pos, x="Date", y="Orders with Redemptions", title=""),
-                    "Transactions where a loyalty reward was applied."),
-        create_card("In Lane Clip Count",
-                    px.bar(df_pos, x="Date", y="In Lane Clip Count", title=""),
-                    "Offers clipped in-store during checkout.")
-    ]),
-
-    html.H2("5. Operational Health & System Integrity"),
-    html.P("A successful loyalty program relies on seamless operations. This section covers backend uptime and checks for edge cases — such as rewards exceeding order value."),
-    dbc.Row([
-        create_card("System Uptime %",
-                    px.line(df, x="date", y="uptime", title=""),
-                    "Availability of the backend system handling loyalty."),
-        create_card("Basket < Reward Count",
-                    px.bar(df_pos, x="Date", y="Basket < Reward Count", title=""),
-                    "Orders where reward value exceeded basket total (should always be zero).")
-    ]),
-
-    html.H2("6. Regional & Checkout Insights"),
-    html.P("Where are users most active? How well are transactions being matched to loyalty accounts at the register? These questions are addressed here."),
-    dbc.Row([
-        create_card("Users by Region",
-                    px.choropleth(df.groupby("region").size().reset_index(name="users"),
-                                  locations="region", locationmode="USA-states",
-                                  color="users", scope="usa"),
-                    "Heatmap of user activity across U.S. regions."),
-        create_card("Matched POS Orders",
-                    px.line(df_pos, x="Date", y="Matched POS Orders", title=""),
-                    "Orders matched to a loyalty member account at checkout.")
-    ])
+    html.Div(id="dashboard-content")
 ], fluid=True)
+
+@app.callback(
+    Output("dashboard-content", "children"),
+    Input("global-toggle", "value")
+)
+def update_dashboard(view_type):
+    return [
+        html.Div([
+            html.H2("Loyalty Engagement", className="mb-3", style={"fontFamily": "Montserrat"}),
+            html.P("A pulse on how well the loyalty program is engaging users day-to-day.", style={"fontFamily": "Open Sans"}),
+            dbc.Row([
+                create_card("Daily Active Users", "daily_active_users", view_type, "line",
+                            "How many users engage with us each day."),
+                create_card("New Signups", "new_signups", view_type, "bar",
+                            "New loyalty members acquired.")
+            ]),
+        ], className="mb-5"),
+
+        html.Div([
+            html.H2("Program Interaction", className="mb-3", style={"fontFamily": "Montserrat"}),
+            html.P("Exploring user behavior post-signup and marketing effectiveness.", style={"fontFamily": "Open Sans"}),
+            dbc.Row([
+                create_card("Basket Size Over Time", "basket_size", view_type, "area",
+                            "Average basket size per transaction."),
+                create_card("Email Clicks", "email_clicks", view_type, "bar",
+                            "Marketing engagement through email clicks.")
+            ])
+        ], className="mb-5"),
+
+        html.Div([
+            html.H2("Platform Operations", className="mb-3", style={"fontFamily": "Montserrat"}),
+            html.P("Reliability and health of the backend loyalty infrastructure.", style={"fontFamily": "Open Sans"}),
+            dbc.Row([
+                create_card("System Uptime %", "uptime", view_type, "line",
+                            "System availability for loyalty operations."),
+            ])
+        ], className="mb-5"),
+    ]
 
 if __name__ == "__main__":
     app.run_server(debug=True)
