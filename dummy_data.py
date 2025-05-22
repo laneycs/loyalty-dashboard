@@ -9,7 +9,8 @@ metrics = {
     "Repeat Purchase Rate": 68,
     "Time Between Visits": 6.5,
     "Redemption Rate": 24,
-    "Campaign Attribution": {"Email": 42, "Social": 30, "Referral": 28}
+    "Campaign Attribution": {"Email": 42, "Social": 30, "Referral": 28},
+    "Location-based Segments": {"West": 500, "East": 400, "South": 600}
 }
 
 funnel_data = {
