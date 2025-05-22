@@ -30,8 +30,13 @@
     <div class="card" id="chart-repeat"></div>
     <div class="card" id="chart-funnel"></div>
     <div class="card" id="chart-revenue"></div>
+    <div class="card" id="chart-basket"></div>
+    <div class="card" id="chart-signup"></div>
+    <div class="card" id="chart-repeat-purchase"></div>
+    <div class="card" id="chart-visit-time"></div>
     <div class="card" id="chart-scan-rate"></div>
     <div class="card" id="chart-redemption"></div>
+    <div class="card" id="chart-campaign"></div>
 
     <script>
         function changeLocation() {
@@ -50,44 +55,62 @@
             y: [{{ metrics['Total Registered Users'] }}],
             type: 'bar',
             marker: { color: '#66bb6a' }
-        }], {
-            title: 'Total Registered Users'
-        });
+        }], { title: 'Total Registered Users' });
 
         Plotly.newPlot('chart-repeat', [{
             x: ['New Users', 'Repeat Users'],
             y: [{{ metrics['Repeat vs New Users']['New'] }}, {{ metrics['Repeat vs New Users']['Repeat'] }}],
             type: 'bar',
             marker: { color: ['#FFA07A', '#20B2AA'] }
-        }], {
-            title: 'New vs Repeat Users'
-        });
+        }], { title: 'New vs Repeat Users' });
 
         Plotly.newPlot('chart-funnel', [{
             type: 'funnel',
             y: ["Visitors", "Signups", "Purchases"],
             x: [{{ funnel_data["Visitors"] }}, {{ funnel_data["Signups"] }}, {{ funnel_data["Purchases"] }}]
-        }], {
-            title: "Conversion Funnel"
-        });
+        }], { title: "Conversion Funnel" });
 
         Plotly.newPlot('chart-revenue', [{
-            x: ['Revenue', 'Basket Size'],
-            y: [{{ metrics['Revenue'] }}, {{ metrics['Average Basket Size'] }}],
+            x: ['Revenue'],
+            y: [{{ metrics['Revenue'] }}],
             type: 'bar',
-            marker: { color: ['#42a5f5', '#ffca28'] }
-        }], {
-            title: 'Revenue & Average Basket Size'
-        });
+            marker: { color: '#42a5f5' }
+        }], { title: 'Revenue' });
+
+        Plotly.newPlot('chart-basket', [{
+            x: ['Average Basket Size'],
+            y: [{{ metrics['Average Basket Size'] }}],
+            type: 'bar',
+            marker: { color: '#ffca28' }
+        }], { title: 'Average Basket Size' });
+
+        Plotly.newPlot('chart-signup', [{
+            x: ['Loyalty Sign-Up Rate'],
+            y: [{{ metrics['Loyalty Sign-Up Rate'] }}],
+            type: 'bar',
+            marker: { color: '#ab47bc' }
+        }], { title: 'Loyalty Sign-Up Rate (%)' });
+
+        Plotly.newPlot('chart-repeat-purchase', [{
+            x: ['Repeat Purchase Rate'],
+            y: [{{ metrics['Repeat Purchase Rate'] }}],
+            type: 'bar',
+            marker: { color: '#26a69a' }
+        }], { title: 'Repeat Purchase Rate (%)' });
+
+        Plotly.newPlot('chart-visit-time', [{
+            x: ['Time Between Visits'],
+            y: [{{ metrics['Time Between Visits'] }}],
+            type: 'bar',
+            marker: { color: '#7e57c2' }
+        }], { title: 'Avg. Time Between Visits (days)' });
 
         Plotly.newPlot('chart-scan-rate', [{
             values: [{{ metrics['Scan Rate'] }}, 100 - {{ metrics['Scan Rate'] }}],
             labels: ['Scanned', 'Not Scanned'],
             type: 'pie',
             hole: 0.6
-        }], {
-            title: 'Scan Rate'
-        });
+        }], { title: 'Scan Rate' });
 
         Plotly.newPlot('chart-redemption', [{
             type: 'indicator',
@@ -96,6 +119,16 @@
             title: { text: 'Redemption Rate (%)' },
             gauge: { axis: { range: [0, 100] } }
         }]);
+
+        Plotly.newPlot('chart-campaign', [{
+            values: {{ location_data }},
+            labels: ['Email', 'Social', 'Referral'],
+            type: 'pie',
+            hole: .4
+        }], {
+            title: 'Campaign Attribution - {{ selected_location }}',
+            showlegend: true
+        });
     </script>
 </body>
 </html>
