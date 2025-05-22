@@ -1,1 +1,7 @@
-# Placeholder for requirements.txt
+dash==3.0.4
+dash-bootstrap-components==2.0.2
+dash-auth==2.3.0
+Flask==3.0.3
+gunicorn==23.0.0
+pandas==2.2.3
+plotly==6.1.1
