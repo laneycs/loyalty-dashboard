@@ -11,6 +11,12 @@
     <h1>Sprouts Loyalty Insights</h1>
     <a href="/logout">Logout</a>
 
+    <div class="button-group">
+        <button onclick="setRange('Daily')" class="{{ 'active' if time_range == 'Daily' else '' }}">Daily</button>
+        <button onclick="setRange('Weekly')" class="{{ 'active' if time_range == 'Weekly' else '' }}">Weekly</button>
+        <button onclick="setRange('Monthly')" class="{{ 'active' if time_range == 'Monthly' else '' }}">Monthly</button>
+    </div>
+
     <div class="card">
         <label for="location">View Campaign Attribution by Region:</label>
         <select id="location" onchange="changeLocation()">
@@ -23,16 +29,23 @@
     <div class="card">
         <h2>Total Registered Users</h2>
         <p>{{ metrics['Total Registered Users'] }}</p>
-        <p class="narrative"><strong>What:</strong> Total users who registered.<br><strong>Why:</strong> Indicates platform growth.<br><strong>How:</strong> We use it to track campaign success over time.</p>
+        <p class="narrative"><strong>What:</strong> Total users who registered.<br><strong>Why:</strong> Indicates platform growth.<br><strong>How:</strong> Helps track campaign success.</p>
     </div>
 
     <div class="card" id="chart1"></div>
     <div class="card" id="chart2"></div>
+    <div class="card" id="funnelChart"></div>
 
     <script>
         function changeLocation() {
             const loc = document.getElementById('location').value;
-            window.location.href = '/dashboard?location=' + loc;
+            const range = '{{ time_range }}';
+            window.location.href = `/dashboard?location=${loc}&range=${range}`;
+        }
+
+        function setRange(range) {
+            const loc = '{{ selected_location }}';
+            window.location.href = `/dashboard?location=${loc}&range=${range}`;
         }
 
         Plotly.newPlot('chart1', [{
@@ -52,6 +65,14 @@
         }], {
             title: 'Campaign Attribution - {{ selected_location }}',
             showlegend: true
+        });
+
+        Plotly.newPlot('funnelChart', [{
+            type: 'funnel',
+            y: ["Visitors", "Signups", "Purchases"],
+            x: [{{ funnel_data["Visitors"] }}, {{ funnel_data["Signups"] }}, {{ funnel_data["Purchases"] }}]
+        }], {
+            title: "Conversion Funnel"
         });
     </script>
 </body>
