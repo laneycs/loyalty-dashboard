@@ -25,11 +25,12 @@ h1 {
 .card:hover {
     transform: scale(1.01);
 }
-select {
+select, button {
     padding: 0.5em;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 1em;
+    margin: 0.5em 0;
 }
 a {
     display: block;
@@ -45,4 +46,19 @@ a:hover {
     font-style: italic;
     font-size: 0.95em;
     color: #555;
+}
+.button-group {
+    text-align: center;
+    margin-top: 1em;
+}
+.button-group button {
+    margin: 0 0.5em;
+    background: #e0f7fa;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+}
+.button-group button.active {
+    background: #00bcd4;
+    color: white;
 }
