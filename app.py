@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, redirect, url_for, request, session
 from login import check_login
-from dummy_data import metrics, location_data, funnel_data
+from dummy_data import metrics, funnel_data, location_data
 app = Flask(__name__)
 app.secret_key = 'replace_with_a_real_secret_key'
 
