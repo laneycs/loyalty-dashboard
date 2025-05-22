@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, redirect, url_for, request, session
 from login import check_login
-from dummy_data import metrics
+from dummy_data import metrics, location_data
 app = Flask(__name__)
 app.secret_key = 'replace_with_a_real_secret_key'
 
@@ -17,7 +17,9 @@ def login():
 def dashboard():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    return render_template('dashboard.html', metrics=metrics)
+    selected_location = request.args.get('location', 'All')
+    data = location_data.get(selected_location, location_data['All'])
+    return render_template('dashboard.html', metrics=metrics, location_data=data, selected_location=selected_location, locations=location_data.keys())
 
 @app.route('/logout')
 def logout():

@@ -13,3 +13,10 @@ metrics = {
     "Location-based Segments": {"West": 500, "East": 400, "South": 600},
     "Campaign Attribution": {"Email": "40%", "Social": "35%", "Referral": "25%"}
 }
+
+location_data = {
+    "All": [40, 35, 25],
+    "West": [50, 30, 20],
+    "East": [30, 45, 25],
+    "South": [40, 25, 35]
+}
