@@ -1,64 +1,51 @@
 
 body {
-    background-color: #f9fafb;
-    font-family: 'Inter', 'Helvetica Neue', sans-serif;
-    color: #333;
-    padding: 0;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f7f8;
 }
 h1 {
+    font-family: 'Poppins', sans-serif;
     text-align: center;
     padding: 1em;
+    color: #2e7d32;
 }
-.login-form, .card {
-    width: 90%;
-    max-width: 800px;
-    margin: 2em auto;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
 }
 .card {
     background: white;
-    padding: 2em;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-.card:hover {
-    transform: scale(1.01);
-}
-select, button {
-    padding: 0.5em;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    margin: 0.5em 0;
-}
-a {
-    display: block;
-    text-align: center;
-    margin-bottom: 2em;
-    color: #20B2AA;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
+.card h2 {
+    font-family: 'Poppins', sans-serif;
+    margin-top: 0;
 }
 .narrative {
-    font-style: italic;
-    font-size: 0.95em;
+    margin: 0.5rem 0 1rem;
+    font-size: 0.95rem;
     color: #555;
 }
 .button-group {
-    text-align: center;
-    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
 }
 .button-group button {
-    margin: 0 0.5em;
-    background: #e0f7fa;
-    border: none;
     padding: 0.5em 1em;
+    font-size: 1rem;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
     cursor: pointer;
 }
-.button-group button.active {
-    background: #00bcd4;
-    color: white;
+.button-group button:hover {
+    background-color: #c8e6c9;
 }
