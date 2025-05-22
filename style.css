@@ -1,29 +1,37 @@
 
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
+    background-color: #f9fafb;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+    color: #333;
     padding: 0;
-    background: #f4f4f4;
+    margin: 0;
 }
-form, .metrics {
+h1 {
+    text-align: center;
+    padding: 1em;
+}
+.login-form, .card {
     width: 90%;
-    max-width: 600px;
-    margin: auto;
-    padding: 2em;
+    max-width: 800px;
+    margin: 2em auto;
 }
 .card {
     background: white;
-    padding: 1em;
-    margin: 1em 0;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 2em;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
 }
-.narrative {
-    font-style: italic;
-    color: #666;
+.card:hover {
+    transform: scale(1.01);
 }
-@media (max-width: 600px) {
-    .card {
-        font-size: 14px;
-    }
+a {
+    display: block;
+    text-align: center;
+    margin-bottom: 2em;
+    color: #20B2AA;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
 }
