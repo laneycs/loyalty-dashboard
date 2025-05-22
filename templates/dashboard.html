@@ -5,59 +5,82 @@
     <title>Sprouts Loyalty Dashboard</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <h1>Sprouts Loyalty Dashboard</h1>
     <div class="button-group">
-        <button onclick="setRange('Daily')">Daily</button>
-        <button onclick="setRange('Weekly')">Weekly</button>
-        <button onclick="setRange('Monthly')">Monthly</button>
+        <button onclick="setRange('Daily')" id="btn-daily">Daily</button>
+        <button onclick="setRange('Weekly')" id="btn-weekly">Weekly</button>
+        <button onclick="setRange('Monthly')" id="btn-monthly">Monthly</button>
     </div>
+
     <div class="grid-container">
-        <div class="card"><h2>Total Registered Users</h2><p class="narrative">How many customers have signed up.</p><div id="chart-users"></div></div>
-        <div class="card"><h2>New vs Repeat Users</h2><p class="narrative">Tracks returning vs new shoppers.</p><div id="chart-repeat"></div></div>
-        <div class="card"><h2>Conversion Funnel</h2><p class="narrative">Shows drop-off from visit to purchase.</p><div id="chart-funnel"></div></div>
-        <div class="card"><h2>Revenue</h2><p class="narrative">Total earnings from loyalty shoppers.</p><div id="chart-revenue"></div></div>
-        <div class="card"><h2>Average Basket Size</h2><p class="narrative">Average dollars spent per trip.</p><div id="chart-basket"></div></div>
-        <div class="card"><h2>Loyalty Sign-Up Rate</h2><p class="narrative">Percentage joining the loyalty program.</p><div id="chart-signup"></div></div>
-        <div class="card"><h2>Repeat Purchase Rate</h2><p class="narrative">How often people return to buy again.</p><div id="chart-repeat-purchase"></div></div>
-        <div class="card"><h2>Time Between Visits</h2><p class="narrative">Average days between return visits.</p><div id="chart-visit-time"></div></div>
-        <div class="card"><h2>Scan Rate</h2><p class="narrative">How often loyalty ID is scanned.</p><div id="chart-scan-rate"></div></div>
-        <div class="card"><h2>Redemption Rate</h2><p class="narrative">Percentage of rewards redeemed.</p><div id="chart-redemption"></div></div>
-        <div class="card"><h2>Campaign Attribution</h2><p class="narrative">Which channel drove loyalty actions.</p><div id="chart-campaign"></div></div>
-        <div class="card"><h2>Location-Based Segments</h2><p class="narrative">Regional loyalty user distribution.</p><div id="map-segments"></div></div>
+        <div class="card"><h2>Total Registered Users</h2><div id="chart-users"></div></div>
+        <div class="card"><h2>New vs Repeat Users</h2><div id="chart-repeat"></div></div>
+        <div class="card"><h2>Conversion Funnel</h2><div id="chart-funnel"></div></div>
+        <div class="card"><h2>Revenue</h2><div id="chart-revenue"></div></div>
+        <div class="card"><h2>Average Basket Size</h2><div id="chart-basket"></div></div>
+        <div class="card"><h2>Loyalty Sign-Up Rate</h2><div id="chart-signup"></div></div>
+        <div class="card"><h2>Repeat Purchase Rate</h2><div id="chart-repeat-purchase"></div></div>
+        <div class="card"><h2>Time Between Visits</h2><div id="chart-visit-time"></div></div>
+        <div class="card"><h2>Scan Rate</h2><div id="chart-scan-rate"></div></div>
+        <div class="card"><h2>Redemption Rate</h2><div id="chart-redemption"></div></div>
+        <div class="card"><h2>Campaign Attribution</h2><div id="chart-campaign"></div></div>
+        <div class="card"><h2>Location-Based Segments</h2><div id="map-segments"></div></div>
     </div>
 
     <script>
+        let currentRange = 'Weekly';
+
+        const dataByRange = {
+            Daily: {
+                users: 1200, repeat: [400, 800], funnel: [2000, 700, 300]
+            },
+            Weekly: {
+                users: 1500, repeat: [600, 900], funnel: [5200, 1800, 970]
+            },
+            Monthly: {
+                users: 1800, repeat: [750, 1050], funnel: [10000, 3000, 1800]
+            }
+        };
+
         function setRange(range) {
-            console.log("Time range changed to:", range);
+            currentRange = range;
+            document.querySelectorAll('.button-group button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${range.toLowerCase()}`).classList.add('active');
+            drawCharts();
         }
 
-        Plotly.newPlot('chart-users', [{ x: ['Registered'], y: [1500], type: 'bar' }]);
-        Plotly.newPlot('chart-repeat', [{ x: ['New', 'Repeat'], y: [600, 900], type: 'bar' }]);
-        Plotly.newPlot('chart-funnel', [{ type: 'funnel', y: ['Visitors', 'Signups', 'Purchases'], x: [5200, 1800, 970] }]);
-        Plotly.newPlot('chart-revenue', [{ x: ['Revenue'], y: [42000], type: 'bar' }]);
-        Plotly.newPlot('chart-basket', [{ x: ['Basket Size'], y: [32.75], type: 'bar' }]);
-        Plotly.newPlot('chart-signup', [{ x: ['Sign-Up Rate'], y: [36], type: 'bar' }]);
-        Plotly.newPlot('chart-repeat-purchase', [{ x: ['Repeat Purchase'], y: [68], type: 'bar' }]);
-        Plotly.newPlot('chart-visit-time', [{ x: ['Days Between Visits'], y: [6.5], type: 'bar' }]);
-        Plotly.newPlot('chart-scan-rate', [{ values: [52, 48], labels: ['Scanned', 'Not'], type: 'pie', hole: 0.6 }]);
-        Plotly.newPlot('chart-redemption', [{
-            type: 'indicator', mode: 'gauge+number', value: 24,
-            title: { text: 'Redemption Rate (%)' },
-            gauge: { axis: { range: [0, 100] } }
-        }]);
-        Plotly.newPlot('chart-campaign', [{ values: [42, 30, 28], labels: ['Email', 'Social', 'Referral'], type: 'pie', hole: .4 }]);
-        Plotly.newPlot('map-segments', [{
-            type: 'choropleth',
-            locationmode: 'USA-states',
-            locations: ['CA', 'NY', 'TX'],
-            z: [500, 400, 600],
-            colorscale: 'Greens',
-            colorbar: { title: 'Users' }
-        }], { geo: { scope: 'usa' }, title: 'Loyalty User Distribution' });
+        function drawCharts() {
+            const d = dataByRange[currentRange];
+            Plotly.newPlot('chart-users', [{ x: ['Users'], y: [d.users], type: 'bar' }]);
+            Plotly.newPlot('chart-repeat', [{ x: ['New', 'Repeat'], y: d.repeat, type: 'bar' }]);
+            Plotly.newPlot('chart-funnel', [{ type: 'funnel', y: ['Visitors', 'Signups', 'Purchases'], x: d.funnel }]);
+            Plotly.newPlot('chart-revenue', [{ x: ['Revenue'], y: [42000], type: 'bar' }]);
+            Plotly.newPlot('chart-basket', [{ x: ['Avg Basket'], y: [32.75], type: 'bar' }]);
+            Plotly.newPlot('chart-signup', [{ x: ['Sign-Up'], y: [36], type: 'bar' }]);
+            Plotly.newPlot('chart-repeat-purchase', [{ x: ['Repeat Purchase'], y: [68], type: 'bar' }]);
+            Plotly.newPlot('chart-visit-time', [{ x: ['Days Between'], y: [6.5], type: 'bar' }]);
+            Plotly.newPlot('chart-scan-rate', [{ values: [52, 48], labels: ['Scanned', 'Not'], type: 'pie', hole: 0.6 }]);
+            Plotly.newPlot('chart-redemption', [{
+                type: 'indicator', mode: 'gauge+number', value: 24,
+                title: { text: 'Redemption Rate (%)' },
+                gauge: { axis: { range: [0, 100] } }
+            }]);
+            Plotly.newPlot('chart-campaign', [{ values: [42, 30, 28], labels: ['Email', 'Social', 'Referral'], type: 'pie', hole: .4 }]);
+            Plotly.newPlot('map-segments', [{
+                type: 'choropleth',
+                locationmode: 'USA-states',
+                locations: ['CA', 'NY', 'TX'],
+                z: [500, 400, 600],
+                colorscale: 'Greens',
+                colorbar: { title: 'Users' }
+            }], { geo: { scope: 'usa' }, title: 'Loyalty User Distribution' });
+        }
+
+        drawCharts();
     </script>
 </body>
 </html>
