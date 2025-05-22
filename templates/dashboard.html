@@ -3,142 +3,61 @@
 <html>
 <head>
     <title>Sprouts Loyalty Dashboard</title>
-    <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h1>Sprouts Loyalty Insights</h1>
-    <a href="/logout">Logout</a>
-
-    <div class="card" id="chart-users"></div>
-    <p class="narrative"><strong>What:</strong> The total number of customers who have signed up.<br><strong>Why:</strong> It shows our reach and user growth over time.<br><strong>How:</strong> Use this to measure the effectiveness of sign-up campaigns.</p>
-
-    <div class="card" id="chart-repeat"></div>
-    <p class="narrative"><strong>What:</strong> Compares returning customers with first-timers.<br><strong>Why:</strong> Returning users often indicate loyalty and satisfaction.<br><strong>How:</strong> Helps guide retention strategy.</p>
-
-    <div class="card" id="chart-funnel"></div>
-    <p class="narrative"><strong>What:</strong> Tracks the journey from visitor to purchaser.<br><strong>Why:</strong> Reveals conversion bottlenecks.<br><strong>How:</strong> Optimize where drop-offs are most common.</p>
-
-    <div class="card" id="chart-revenue"></div>
-    <p class="narrative"><strong>What:</strong> Total revenue generated from loyalty users.<br><strong>Why:</strong> It's a core metric for business impact.<br><strong>How:</strong> Track campaign ROI and user value over time.</p>
-
-    <div class="card" id="chart-basket"></div>
-    <p class="narrative"><strong>What:</strong> The average dollar value per order.<br><strong>Why:</strong> Indicates upsell and cross-sell effectiveness.<br><strong>How:</strong> Use to target high-value customers.</p>
-
-    <div class="card" id="chart-signup"></div>
-    <p class="narrative"><strong>What:</strong> Percentage of users who signed up for loyalty.<br><strong>Why:</strong> Tracks how compelling the program is.<br><strong>How:</strong> Helps tailor promotions and sign-up flows.</p>
-
-    <div class="card" id="chart-repeat-purchase"></div>
-    <p class="narrative"><strong>What:</strong> Percentage of users who purchased again.<br><strong>Why:</strong> Reflects customer retention.<br><strong>How:</strong> Incentivize repeat purchases with offers.</p>
-
-    <div class="card" id="chart-visit-time"></div>
-    <p class="narrative"><strong>What:</strong> Time between repeat visits.<br><strong>Why:</strong> Shorter intervals may indicate stronger loyalty.<br><strong>How:</strong> Use to fine-tune timing of re-engagement campaigns.</p>
-
-    <div class="card" id="chart-scan-rate"></div>
-    <p class="narrative"><strong>What:</strong> How often loyalty IDs are scanned at checkout.<br><strong>Why:</strong> Shows program adoption.<br><strong>How:</strong> Encourage scanning via reminders and bonuses.</p>
-
-    <div class="card" id="chart-redemption"></div>
-    <p class="narrative"><strong>What:</strong> Percent of rewards redeemed.<br><strong>Why:</strong> Tells us how compelling the rewards are.<br><strong>How:</strong> Use this to adjust reward thresholds and offerings.</p>
-
-    <div class="card" id="chart-campaign"></div>
-    <p class="narrative"><strong>What:</strong> Breakdown of campaign source by region.<br><strong>Why:</strong> Indicates which channels drive engagement.<br><strong>How:</strong> Use to optimize channel strategy.</p>
-
-    <div class="card" id="map-segments"></div>
-    <p class="narrative"><strong>What:</strong> Loyalty user distribution across regions.<br><strong>Why:</strong> Helps prioritize localized efforts.<br><strong>How:</strong> Guide regional strategy and outreach.</p>
+    <h1>Sprouts Loyalty Dashboard</h1>
+    <div class="button-group">
+        <button onclick="setRange('Daily')">Daily</button>
+        <button onclick="setRange('Weekly')">Weekly</button>
+        <button onclick="setRange('Monthly')">Monthly</button>
+    </div>
+    <div class="grid-container">
+        <div class="card"><h2>Total Registered Users</h2><p class="narrative">How many customers have signed up.</p><div id="chart-users"></div></div>
+        <div class="card"><h2>New vs Repeat Users</h2><p class="narrative">Tracks returning vs new shoppers.</p><div id="chart-repeat"></div></div>
+        <div class="card"><h2>Conversion Funnel</h2><p class="narrative">Shows drop-off from visit to purchase.</p><div id="chart-funnel"></div></div>
+        <div class="card"><h2>Revenue</h2><p class="narrative">Total earnings from loyalty shoppers.</p><div id="chart-revenue"></div></div>
+        <div class="card"><h2>Average Basket Size</h2><p class="narrative">Average dollars spent per trip.</p><div id="chart-basket"></div></div>
+        <div class="card"><h2>Loyalty Sign-Up Rate</h2><p class="narrative">Percentage joining the loyalty program.</p><div id="chart-signup"></div></div>
+        <div class="card"><h2>Repeat Purchase Rate</h2><p class="narrative">How often people return to buy again.</p><div id="chart-repeat-purchase"></div></div>
+        <div class="card"><h2>Time Between Visits</h2><p class="narrative">Average days between return visits.</p><div id="chart-visit-time"></div></div>
+        <div class="card"><h2>Scan Rate</h2><p class="narrative">How often loyalty ID is scanned.</p><div id="chart-scan-rate"></div></div>
+        <div class="card"><h2>Redemption Rate</h2><p class="narrative">Percentage of rewards redeemed.</p><div id="chart-redemption"></div></div>
+        <div class="card"><h2>Campaign Attribution</h2><p class="narrative">Which channel drove loyalty actions.</p><div id="chart-campaign"></div></div>
+        <div class="card"><h2>Location-Based Segments</h2><p class="narrative">Regional loyalty user distribution.</p><div id="map-segments"></div></div>
+    </div>
 
     <script>
-    Plotly.newPlot('chart-users', [{
-        x: ['Total Registered Users'],
-        y: [1500],
-        type: 'bar',
-        marker: { color: '#66bb6a' }
-    }]);
+        function setRange(range) {
+            console.log("Time range changed to:", range);
+        }
 
-    Plotly.newPlot('chart-repeat', [{
-        x: ['New Users', 'Repeat Users'],
-        y: [600, 900],
-        type: 'bar',
-        marker: { color: ['#FFA07A', '#20B2AA'] }
-    }]);
-
-    Plotly.newPlot('chart-funnel', [{
-        type: 'funnel',
-        y: ["Visitors", "Signups", "Purchases"],
-        x: [5200, 1800, 970]
-    }]);
-
-    Plotly.newPlot('chart-revenue', [{
-        x: ['Revenue'],
-        y: [42000],
-        type: 'bar',
-        marker: { color: '#42a5f5' }
-    }]);
-
-    Plotly.newPlot('chart-basket', [{
-        x: ['Average Basket Size'],
-        y: [32.75],
-        type: 'bar',
-        marker: { color: '#ffca28' }
-    }]);
-
-    Plotly.newPlot('chart-signup', [{
-        x: ['Loyalty Sign-Up Rate'],
-        y: [36],
-        type: 'bar',
-        marker: { color: '#ab47bc' }
-    }]);
-
-    Plotly.newPlot('chart-repeat-purchase', [{
-        x: ['Repeat Purchase Rate'],
-        y: [68],
-        type: 'bar',
-        marker: { color: '#26a69a' }
-    }]);
-
-    Plotly.newPlot('chart-visit-time', [{
-        x: ['Time Between Visits'],
-        y: [6.5],
-        type: 'bar',
-        marker: { color: '#7e57c2' }
-    }]);
-
-    Plotly.newPlot('chart-scan-rate', [{
-        values: [52, 48],
-        labels: ['Scanned', 'Not Scanned'],
-        type: 'pie',
-        hole: 0.6
-    }]);
-
-    Plotly.newPlot('chart-redemption', [{
-        type: 'indicator',
-        mode: 'gauge+number',
-        value: 24,
-        title: { text: 'Redemption Rate (%)' },
-        gauge: { axis: { range: [0, 100] } }
-    }]);
-
-    Plotly.newPlot('chart-campaign', [{
-        values: [42, 30, 28],
-        labels: ['Email', 'Social', 'Referral'],
-        type: 'pie',
-        hole: .4
-    }], {
-        title: 'Campaign Attribution',
-        showlegend: true
-    });
-
-    Plotly.newPlot('map-segments', [{
-        type: 'choropleth',
-        locationmode: 'USA-states',
-        locations: ['CA', 'NY', 'TX'],
-        z: [500, 400, 600],
-        colorscale: 'Greens',
-        colorbar: { title: 'Users' }
-    }], {
-        geo: { scope: 'usa' },
-        title: 'Loyalty User Distribution (Map)'
-    });
+        Plotly.newPlot('chart-users', [{ x: ['Registered'], y: [1500], type: 'bar' }]);
+        Plotly.newPlot('chart-repeat', [{ x: ['New', 'Repeat'], y: [600, 900], type: 'bar' }]);
+        Plotly.newPlot('chart-funnel', [{ type: 'funnel', y: ['Visitors', 'Signups', 'Purchases'], x: [5200, 1800, 970] }]);
+        Plotly.newPlot('chart-revenue', [{ x: ['Revenue'], y: [42000], type: 'bar' }]);
+        Plotly.newPlot('chart-basket', [{ x: ['Basket Size'], y: [32.75], type: 'bar' }]);
+        Plotly.newPlot('chart-signup', [{ x: ['Sign-Up Rate'], y: [36], type: 'bar' }]);
+        Plotly.newPlot('chart-repeat-purchase', [{ x: ['Repeat Purchase'], y: [68], type: 'bar' }]);
+        Plotly.newPlot('chart-visit-time', [{ x: ['Days Between Visits'], y: [6.5], type: 'bar' }]);
+        Plotly.newPlot('chart-scan-rate', [{ values: [52, 48], labels: ['Scanned', 'Not'], type: 'pie', hole: 0.6 }]);
+        Plotly.newPlot('chart-redemption', [{
+            type: 'indicator', mode: 'gauge+number', value: 24,
+            title: { text: 'Redemption Rate (%)' },
+            gauge: { axis: { range: [0, 100] } }
+        }]);
+        Plotly.newPlot('chart-campaign', [{ values: [42, 30, 28], labels: ['Email', 'Social', 'Referral'], type: 'pie', hole: .4 }]);
+        Plotly.newPlot('map-segments', [{
+            type: 'choropleth',
+            locationmode: 'USA-states',
+            locations: ['CA', 'NY', 'TX'],
+            z: [500, 400, 600],
+            colorscale: 'Greens',
+            colorbar: { title: 'Users' }
+        }], { geo: { scope: 'usa' }, title: 'Loyalty User Distribution' });
     </script>
 </body>
 </html>
