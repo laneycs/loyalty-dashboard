@@ -5,18 +5,39 @@
     <title>Sprouts Loyalty Dashboard</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <h1>Welcome to Sprouts Loyalty Dashboard</h1>
     <a href="/logout">Logout</a>
-    <div class="metrics">
-    {% for key, value in metrics.items() %}
-        <div class="card">
-            <h2>{{ key }}</h2>
-            <p>{{ value }}</p>
-            <p class="narrative">What it is, why it matters, and how we use it.</p>
-        </div>
-    {% endfor %}
+
+    <div class="card">
+        <h2>Total Registered Users</h2>
+        <p>{{ metrics['Total Registered Users'] }}</p>
     </div>
+
+    <div class="card" id="chart1"></div>
+    <div class="card" id="chart2"></div>
+
+    <script>
+        Plotly.newPlot('chart1', [{
+            x: ['New Users', 'Repeat Users'],
+            y: [{{ metrics['Repeat vs New Users']['New'] }}, {{ metrics['Repeat vs New Users']['Repeat'] }}],
+            type: 'bar',
+            marker: { color: ['#FFA07A', '#20B2AA'] }
+        }], {
+            title: 'New vs Repeat Users'
+        });
+
+        Plotly.newPlot('chart2', [{
+            values: [40, 35, 25],
+            labels: ['Email', 'Social', 'Referral'],
+            type: 'pie',
+            hole: .4
+        }], {
+            title: 'Campaign Attribution',
+            showlegend: true
+        });
+    </script>
 </body>
 </html>
