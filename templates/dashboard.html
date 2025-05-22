@@ -8,18 +8,33 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h1>Welcome to Sprouts Loyalty Dashboard</h1>
+    <h1>Sprouts Loyalty Insights</h1>
     <a href="/logout">Logout</a>
+
+    <div class="card">
+        <label for="location">View Campaign Attribution by Region:</label>
+        <select id="location" onchange="changeLocation()">
+            {% for loc in locations %}
+                <option value="{{ loc }}" {% if loc == selected_location %}selected{% endif %}>{{ loc }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
     <div class="card">
         <h2>Total Registered Users</h2>
         <p>{{ metrics['Total Registered Users'] }}</p>
+        <p class="narrative"><strong>What:</strong> Total users who registered.<br><strong>Why:</strong> Indicates platform growth.<br><strong>How:</strong> We use it to track campaign success over time.</p>
     </div>
 
     <div class="card" id="chart1"></div>
     <div class="card" id="chart2"></div>
 
     <script>
+        function changeLocation() {
+            const loc = document.getElementById('location').value;
+            window.location.href = '/dashboard?location=' + loc;
+        }
+
         Plotly.newPlot('chart1', [{
             x: ['New Users', 'Repeat Users'],
             y: [{{ metrics['Repeat vs New Users']['New'] }}, {{ metrics['Repeat vs New Users']['Repeat'] }}],
@@ -30,12 +45,12 @@
         });
 
         Plotly.newPlot('chart2', [{
-            values: [40, 35, 25],
+            values: {{ location_data }},
             labels: ['Email', 'Social', 'Referral'],
             type: 'pie',
             hole: .4
         }], {
-            title: 'Campaign Attribution',
+            title: 'Campaign Attribution - {{ selected_location }}',
             showlegend: true
         });
     </script>
