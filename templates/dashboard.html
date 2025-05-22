@@ -7,11 +7,6 @@
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-</style>
-
 </head>
 <body>
     <h1>Sprouts Loyalty Dashboard</h1>
@@ -22,93 +17,37 @@
     </div>
 
     <div class="grid-container">
-        <div class="card">
-            <h2>Total Registered Users</h2>
-            <p class="narrative"><strong>What:</strong> Total number of registered users. <strong>Why:</strong> Shows growth. <strong>How:</strong> Helps track acquisition.</p>
-            <div id="chart-users"></div>
-        </div>
-        <div class="card">
-            <h2>New vs Repeat Users</h2>
-            <p class="narrative"><strong>What:</strong> Comparison of user types. <strong>Why:</strong> Reveals retention. <strong>How:</strong> Guides re-engagement.</p>
-            <div id="chart-repeat"></div>
-        </div>
-        <div class="card">
-            <h2>Conversion Funnel</h2>
-            <p class="narrative"><strong>What:</strong> Steps from visit to purchase. <strong>Why:</strong> Identifies drop-off points. <strong>How:</strong> Optimizes conversion.</p>
-            <div id="chart-funnel"></div>
-        </div>
-        <div class="card">
-            <h2>Revenue</h2>
-            <p class="narrative"><strong>What:</strong> Loyalty-driven revenue. <strong>Why:</strong> Tracks ROI. <strong>How:</strong> Measures success.</p>
-            <div id="chart-revenue"></div>
-        </div>
-        <div class="card">
-            <h2>Average Basket Size</h2>
-            <p class="narrative"><strong>What:</strong> Average spend per visit. <strong>Why:</strong> Reveals upsell success. <strong>How:</strong> Targets high-value buyers.</p>
-            <div id="chart-basket"></div>
-        </div>
-        <div class="card">
-            <h2>Sign-Up Rate</h2>
-            <p class="narrative"><strong>What:</strong> Loyalty program joins. <strong>Why:</strong> Measures appeal. <strong>How:</strong> Shapes incentives.</p>
-            <div id="chart-signup"></div>
-        </div>
-        <div class="card">
-            <h2>Repeat Purchase Rate</h2>
-            <p class="narrative"><strong>What:</strong> Return buyers rate. <strong>Why:</strong> Shows retention. <strong>How:</strong> Supports loyalty growth.</p>
-            <div id="chart-repeat-purchase"></div>
-        </div>
-        <div class="card">
-            <h2>Time Between Visits</h2>
-            <p class="narrative"><strong>What:</strong> Days between visits. <strong>Why:</strong> Highlights engagement. <strong>How:</strong> Helps with outreach timing.</p>
-            <div id="chart-visit-time"></div>
-        </div>
-        <div class="card">
-            <h2>Scan Rate</h2>
-            <p class="narrative"><strong>What:</strong> Loyalty scan frequency. <strong>Why:</strong> Indicates adoption. <strong>How:</strong> Encourages usage.</p>
-            <div id="chart-scan-rate"></div>
-        </div>
-        <div class="card">
-            <h2>Redemption Rate</h2>
-            <p class="narrative"><strong>What:</strong> Reward usage rate. <strong>Why:</strong> Validates reward value. <strong>How:</strong> Adjusts offers.</p>
-            <div id="chart-redemption"></div>
-        </div>
-        <div class="card">
-            <h2>Campaign Attribution</h2>
-            <p class="narrative"><strong>What:</strong> Source of loyalty joins. <strong>Why:</strong> Evaluates channel performance. <strong>How:</strong> Refines marketing.</p>
-            <div id="chart-campaign"></div>
-        </div>
-        <div class="card">
-            <h2>Location-Based Segments</h2>
-            <p class="narrative"><strong>What:</strong> Geographic distribution. <strong>Why:</strong> Informs local strategy. <strong>How:</strong> Personalizes engagement.</p>
-            <div id="map-segments"></div>
-        </div>
+        <div class="card"><h2>Total Registered Users</h2><p class="narrative">How many customers joined.</p><div id="chart-users"></div></div>
+        <div class="card"><h2>New vs Repeat Users</h2><p class="narrative">Compare new and loyal customers.</p><div id="chart-repeat"></div></div>
+        <div class="card"><h2>Revenue</h2><p class="narrative">Total earnings from loyalty users.</p><div id="chart-revenue"></div></div>
+        <div class="card"><h2>Basket Size</h2><p class="narrative">Average spend per customer.</p><div id="chart-basket"></div></div>
     </div>
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-        Plotly.newPlot('chart-users', [{ x: ['Users'], y: [1500], type: 'bar' }]);
-        Plotly.newPlot('chart-repeat', [{ x: ['New', 'Repeat'], y: [600, 900], type: 'bar' }]);
-        Plotly.newPlot('chart-funnel', [{ type: 'funnel', y: ['Visitors', 'Signups', 'Purchases'], x: [5200, 1800, 970] }]);
-        Plotly.newPlot('chart-revenue', [{ x: ['Revenue'], y: [42000], type: 'bar' }]);
-        Plotly.newPlot('chart-basket', [{ x: ['Basket Size'], y: [32.75], type: 'bar' }]);
-        Plotly.newPlot('chart-signup', [{ x: ['Sign-Up'], y: [36], type: 'bar' }]);
-        Plotly.newPlot('chart-repeat-purchase', [{ x: ['Repeat Purchase'], y: [68], type: 'bar' }]);
-        Plotly.newPlot('chart-visit-time', [{ x: ['Days Between'], y: [6.5], type: 'bar' }]);
-        Plotly.newPlot('chart-scan-rate', [{ values: [52, 48], labels: ['Scanned', 'Not'], type: 'pie', hole: 0.6 }]);
-        Plotly.newPlot('chart-redemption', [{
-            type: 'indicator', mode: 'gauge+number', value: 24,
-            title: { text: 'Redemption Rate (%)' },
-            gauge: { axis: { range: [0, 100] } }
-        }]);
-        Plotly.newPlot('chart-campaign', [{ values: [42, 30, 28], labels: ['Email', 'Social', 'Referral'], type: 'pie', hole: .4 }]);
-        Plotly.newPlot('map-segments', [{
-            type: 'choropleth',
-            locationmode: 'USA-states',
-            locations: ['CA', 'NY', 'TX'],
-            z: [500, 400, 600],
-            colorscale: 'Greens',
-            colorbar: { title: 'Users' }
-        }], { geo: { scope: 'usa' }, title: 'Loyalty User Distribution' });
+        let currentRange = 'Weekly';
+
+        const data = {
+            Daily: { users: 100, repeat: [40, 60], revenue: 2000, basket: 20 },
+            Weekly: { users: 700, repeat: [300, 400], revenue: 14000, basket: 28 },
+            Monthly: { users: 3000, repeat: [1200, 1800], revenue: 60000, basket: 32 }
+        };
+
+        function setRange(range) {
+            currentRange = range;
+            document.querySelectorAll('.button-group button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${range.toLowerCase()}`).classList.add('active');
+            drawCharts();
+        }
+
+        function drawCharts() {
+            const d = data[currentRange];
+            Plotly.newPlot('chart-users', [{ x: ['Users'], y: [d.users], type: 'bar' }]);
+            Plotly.newPlot('chart-repeat', [{ x: ['New', 'Repeat'], y: d.repeat, type: 'bar' }]);
+            Plotly.newPlot('chart-revenue', [{ x: ['Revenue'], y: [d.revenue], type: 'bar' }]);
+            Plotly.newPlot('chart-basket', [{ x: ['Basket Size'], y: [d.basket], type: 'bar' }]);
+        }
+
+        drawCharts();
     </script>
 </body>
 </html>
