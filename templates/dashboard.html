@@ -18,7 +18,7 @@
     </div>
 
     <div class="card">
-        <label for="location">View Campaign Attribution by Region:</label>
+        <label for="location">Campaign Attribution by Region:</label>
         <select id="location" onchange="changeLocation()">
             {% for loc in locations %}
                 <option value="{{ loc }}" {% if loc == selected_location %}selected{% endif %}>{{ loc }}</option>
@@ -29,7 +29,9 @@
     <div class="card">
         <h2>Total Registered Users</h2>
         <p>{{ metrics['Total Registered Users'] }}</p>
-        <p class="narrative"><strong>What:</strong> Total users who registered.<br><strong>Why:</strong> Indicates platform growth.<br><strong>How:</strong> Helps track campaign success.</p>
+        <p class="narrative"><strong>What:</strong> Total number of users who have registered.<br>
+        <strong>Why:</strong> Indicates top-of-funnel reach.<br>
+        <strong>How:</strong> Helps assess sign-up effectiveness and campaigns.</p>
     </div>
 
     <div class="card" id="chart1"></div>
