@@ -48,6 +48,86 @@
     <p class="narrative"><strong>What:</strong> Loyalty user distribution across regions.<br><strong>Why:</strong> Helps prioritize localized efforts.<br><strong>How:</strong> Guide regional strategy and outreach.</p>
 
     <script>
+    Plotly.newPlot('chart-users', [{
+        x: ['Total Registered Users'],
+        y: [1500],
+        type: 'bar',
+        marker: { color: '#66bb6a' }
+    }]);
+
+    Plotly.newPlot('chart-repeat', [{
+        x: ['New Users', 'Repeat Users'],
+        y: [600, 900],
+        type: 'bar',
+        marker: { color: ['#FFA07A', '#20B2AA'] }
+    }]);
+
+    Plotly.newPlot('chart-funnel', [{
+        type: 'funnel',
+        y: ["Visitors", "Signups", "Purchases"],
+        x: [5200, 1800, 970]
+    }]);
+
+    Plotly.newPlot('chart-revenue', [{
+        x: ['Revenue'],
+        y: [42000],
+        type: 'bar',
+        marker: { color: '#42a5f5' }
+    }]);
+
+    Plotly.newPlot('chart-basket', [{
+        x: ['Average Basket Size'],
+        y: [32.75],
+        type: 'bar',
+        marker: { color: '#ffca28' }
+    }]);
+
+    Plotly.newPlot('chart-signup', [{
+        x: ['Loyalty Sign-Up Rate'],
+        y: [36],
+        type: 'bar',
+        marker: { color: '#ab47bc' }
+    }]);
+
+    Plotly.newPlot('chart-repeat-purchase', [{
+        x: ['Repeat Purchase Rate'],
+        y: [68],
+        type: 'bar',
+        marker: { color: '#26a69a' }
+    }]);
+
+    Plotly.newPlot('chart-visit-time', [{
+        x: ['Time Between Visits'],
+        y: [6.5],
+        type: 'bar',
+        marker: { color: '#7e57c2' }
+    }]);
+
+    Plotly.newPlot('chart-scan-rate', [{
+        values: [52, 48],
+        labels: ['Scanned', 'Not Scanned'],
+        type: 'pie',
+        hole: 0.6
+    }]);
+
+    Plotly.newPlot('chart-redemption', [{
+        type: 'indicator',
+        mode: 'gauge+number',
+        value: 24,
+        title: { text: 'Redemption Rate (%)' },
+        gauge: { axis: { range: [0, 100] } }
+    }]);
+
+    Plotly.newPlot('chart-campaign', [{
+        values: [42, 30, 28],
+        labels: ['Email', 'Social', 'Referral'],
+        type: 'pie',
+        hole: .4
+    }], {
+        title: 'Campaign Attribution',
+        showlegend: true
+    });
+
     Plotly.newPlot('map-segments', [{
         type: 'choropleth',
         locationmode: 'USA-states',
