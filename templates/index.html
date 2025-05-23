@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     {% if session.get('logged_in') %}
@@ -25,11 +26,39 @@
             <div class="card">
                 <h2>{{ metric.title }}</h2>
                 <p class="narrative">{{ metric.narrative }}</p>
-                <div class="chart-placeholder">[Chart Placeholder]</div>
+                <canvas id="chart{{ loop.index }}"></canvas>
             </div>
             {% endfor %}
         </main>
     </div>
+    <script>
+        {% for metric in metrics %}
+        const ctx{{ loop.index }} = document.getElementById('chart{{ loop.index }}').getContext('2d');
+        new Chart(ctx{{ loop.index }}, {
+            type: 'bar',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3'],
+                datasets: [{
+                    label: '{{ metric.title }}',
+                    data: [{{ 10 + loop.index }}, {{ 20 + loop.index }}, {{ 30 + loop.index }}],
+                    backgroundColor: 'rgba(0, 122, 90, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        {% endfor %}
+    </script>
     {% else %}
     <div class="login-form">
         <h2>Login</h2>
