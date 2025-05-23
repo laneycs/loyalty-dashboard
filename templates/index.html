@@ -11,48 +11,61 @@
 </head>
 <body>
     {% if session.get('logged_in') %}
-    <div class="container">
-        <header>
-            <h1>Loyalty Metrics</h1>
-            <div class="button-group">
-                <button class="view-toggle" data-view="daily">Daily</button>
-                <button class="view-toggle" data-view="weekly">Weekly</button>
-                <button class="view-toggle" data-view="monthly">Monthly</button>
-                <a href="/logout" class="logout-link">Logout</a>
-            </div>
-        </header>
-        <main class="grid">
-            {% for metric in metrics %}
-            <div class="card">
-                <h2>{{ metric.title }}</h2>
-                <p class="narrative">{{ metric.narrative }}</p>
-                <canvas id="chart{{ loop.index }}"></canvas>
-            </div>
-            {% endfor %}
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Loyalytics</h2>
+            <nav class="nav-links">
+                <a href="#" class="nav-item active">Dashboard</a>
+                <a href="/logout" class="nav-item">Logout</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>Loyalty Dashboard</h1>
+                <div class="button-group">
+                    <button class="view-toggle" data-view="daily">Daily</button>
+                    <button class="view-toggle" data-view="weekly">Weekly</button>
+                    <button class="view-toggle" data-view="monthly">Monthly</button>
+                </div>
+            </header>
+            <section class="grid">
+                {% for metric in metrics %}
+                <div class="card">
+                    <h2>{{ metric.title }}</h2>
+                    <p class="narrative">{{ metric.narrative }}</p>
+                    <canvas id="chart{{ loop.index }}"></canvas>
+                </div>
+                {% endfor %}
+            </section>
         </main>
     </div>
     <script>
         {% for metric in metrics %}
         const ctx{{ loop.index }} = document.getElementById('chart{{ loop.index }}').getContext('2d');
+        const chartType{{ loop.index }} = {{ loop.index }} % 5 === 0 ? 'line' :
+                                          {{ loop.index }} % 5 === 1 ? 'doughnut' :
+                                          {{ loop.index }} % 5 === 2 ? 'bar' :
+                                          {{ loop.index }} % 5 === 3 ? 'radar' : 'pie';
+
         new Chart(ctx{{ loop.index }}, {
-            type: 'bar',
+            type: chartType{{ loop.index }},
             data: {
                 labels: ['Week 1', 'Week 2', 'Week 3'],
                 datasets: [{
                     label: '{{ metric.title }}',
-                    data: [{{ 10 + loop.index }}, {{ 20 + loop.index }}, {{ 30 + loop.index }}],
-                    backgroundColor: 'rgba(0, 122, 90, 0.6)'
+                    data: [{{ 8 + loop.index }}, {{ 16 + loop.index }}, {{ 24 + loop.index }}],
+                    backgroundColor: ['#007a5a', '#80cbc4', '#c5e1a5'],
+                    borderColor: '#004d40',
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { display: false },
-                    title: {
-                        display: false
-                    }
+                    legend: { display: true },
+                    title: { display: false }
                 },
-                scales: {
+                scales: chartType{{ loop.index }} === 'doughnut' || chartType{{ loop.index }} === 'pie' ? {} : {
                     y: { beginAtZero: true }
                 }
             }
