@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loyalty Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    {% if session.get('logged_in') %}
+    <div class="container">
+        <header>
+            <h1>Loyalty Metrics</h1>
+            <div class="button-group">
+                <button class="view-toggle" data-view="daily">Daily</button>
+                <button class="view-toggle" data-view="weekly">Weekly</button>
+                <button class="view-toggle" data-view="monthly">Monthly</button>
+                <a href="/logout" class="logout-link">Logout</a>
+            </div>
+        </header>
+        <main class="grid">
+            {% for metric in metrics %}
+            <div class="card">
+                <h2>{{ metric.title }}</h2>
+                <p class="narrative">{{ metric.narrative }}</p>
+                <div class="chart-placeholder">[Chart Placeholder]</div>
+            </div>
+            {% endfor %}
+        </main>
+    </div>
+    {% else %}
+    <div class="login-form">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <input type="password" name="passcode" placeholder="Enter Passcode">
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    {% endif %}
+</body>
+</html>
